@@ -6,7 +6,13 @@
 <title>CMSHC Acoustic Simulation</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0e17; color: #c8d6e5; font-family: 'Segoe UI', system-ui, sans-serif; padding: 30px; }
+body { background: #0a0e17; color: #c8d6e5; font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; }
+nav { background: #111827; border-bottom: 1px solid #1e2d3d; padding: 12px 30px; display: flex; gap: 20px; align-items: center; position: sticky; top: 0; z-index: 100; }
+nav a { color: #6b7c93; text-decoration: none; font-size: 0.85rem; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+nav a:hover { color: #2e86de; background: #0d1a2d; }
+nav a.active { color: #2e86de; background: #0d1a2d; border: 1px solid #2e86de; }
+nav .logo { font-size: 1rem; font-weight: 600; color: #e8ecf1; letter-spacing: 0.03em; margin-right: auto; }
+.main-content { padding: 30px; }
 h1 { font-size: 1.5rem; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 4px; }
 .subtitle { font-size: 0.85rem; color: #6b7c93; margin-bottom: 25px; }
 .controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
@@ -32,6 +38,14 @@ svg { display: block; }
 </style>
 </head>
 <body>
+
+<nav>
+  <span class="logo">CMSHC Acoustics</span>
+  <a href="index.html" class="active">Simulation</a>
+  <a href="learn.html">Learn</a>
+</nav>
+
+<div class="main-content">
 
 <h1>CMSHC Acoustic Simulation</h1>
 <p class="subtitle">Interactive treatment scenario comparison</p>
@@ -323,5 +337,6 @@ function updateStats(room, scenario) {
 
 init();
 </script>
+</div>
 </body>
 </html>
