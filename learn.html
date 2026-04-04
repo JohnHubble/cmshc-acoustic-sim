@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMSHC — Understanding the Acoustics</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0e17; color: #c8d6e5; font-family: 'Segoe UI', system-ui, sans-serif; }
+nav { background: #111827; border-bottom: 1px solid #1e2d3d; padding: 12px 30px; display: flex; gap: 20px; align-items: center; position: sticky; top: 0; z-index: 100; }
+nav a { color: #6b7c93; text-decoration: none; font-size: 0.85rem; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+nav a:hover { color: #2e86de; background: #0d1a2d; }
+nav a.active { color: #2e86de; background: #0d1a2d; border: 1px solid #2e86de; }
+nav .logo { font-size: 1rem; font-weight: 600; color: #e8ecf1; letter-spacing: 0.03em; margin-right: auto; }
+
+.content { max-width: 860px; margin: 0 auto; padding: 40px 30px 80px; }
+h1 { font-size: 1.6rem; font-weight: 500; margin-bottom: 8px; color: #e8ecf1; }
+h2 { font-size: 1.2rem; font-weight: 500; margin: 50px 0 16px; color: #e8ecf1; border-bottom: 1px solid #1e2d3d; padding-bottom: 8px; }
+h3 { font-size: 1rem; font-weight: 500; margin: 30px 0 10px; color: #c8d6e5; }
+p { font-size: 0.9rem; line-height: 1.7; color: #8899aa; margin-bottom: 14px; }
+strong { color: #c8d6e5; }
+.subtitle { font-size: 0.85rem; color: #6b7c93; margin-bottom: 40px; }
+
+.diagram { background: #111827; border: 1px solid #1e2d3d; border-radius: 8px; padding: 20px; margin: 20px 0 24px; }
+.diagram svg { display: block; margin: 0 auto; }
+.diagram .caption { font-size: 0.75rem; color: #6b7c93; text-align: center; margin-top: 12px; line-height: 1.5; }
+
+.comparison { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 20px 0; }
+.card { background: #111827; border: 1px solid #1e2d3d; border-radius: 8px; padding: 16px; }
+.card h4 { font-size: 0.85rem; margin-bottom: 8px; }
+.card p { font-size: 0.78rem; margin-bottom: 0; }
+.card.bad { border-color: #e74c3c33; }
+.card.bad h4 { color: #e74c3c; }
+.card.good { border-color: #27ae6033; }
+.card.good h4 { color: #27ae60; }
+.card.warn { border-color: #2e86de33; }
+.card.warn h4 { color: #2e86de; }
+
+.method-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.82rem; }
+.method-table th { text-align: left; padding: 10px 12px; background: #111827; color: #c8d6e5; border-bottom: 1px solid #1e2d3d; font-weight: 500; }
+.method-table td { padding: 10px 12px; border-bottom: 1px solid #0f1729; color: #8899aa; }
+.method-table tr:hover td { background: #111827; }
+
+.instrument-row { display: grid; grid-template-columns: 120px 1fr; gap: 16px; margin: 12px 0; padding: 14px; background: #111827; border-radius: 8px; border: 1px solid #1e2d3d; }
+.instrument-row .name { font-weight: 500; color: #c8d6e5; font-size: 0.85rem; }
+.instrument-row .detail { font-size: 0.78rem; color: #8899aa; line-height: 1.6; }
+.freq-bar { height: 6px; border-radius: 3px; margin: 6px 0; position: relative; }
+.freq-label { font-size: 0.65rem; color: #6b7c93; display: flex; justify-content: space-between; }
+
+.toc { background: #111827; border: 1px solid #1e2d3d; border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.toc h3 { margin: 0 0 12px; font-size: 0.9rem; }
+.toc a { display: block; color: #6b7c93; text-decoration: none; font-size: 0.82rem; padding: 4px 0; }
+.toc a:hover { color: #2e86de; }
+
+@media (max-width: 700px) {
+  .comparison { grid-template-columns: 1fr; }
+  .instrument-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">CMSHC Acoustics</span>
+  <a href="index.html">Simulation</a>
+  <a href="learn.html" class="active">Learn</a>
+</nav>
+
+<div class="content">
+
+<h1>Understanding the Acoustics</h1>
+<p class="subtitle">How to read the simulation and why these numbers matter for sound healing</p>
+
+<div class="toc">
+  <h3>Contents</h3>
+  <a href="#rt60">1. What is RT60?</a>
+  <a href="#why-target">2. Why the target matters for sound healing</a>
+  <a href="#methods">3. Calculation methods (Sabine vs Eyring vs Fitzroy)</a>
+  <a href="#instruments">4. Instrument frequency ranges</a>
+  <a href="#treatment">5. Treatment zones explained</a>
+  <a href="#focal">6. The focal convergence problem</a>
+  <a href="#reading">7. How to read the simulation</a>
+</div>
+
+<!-- ───────────────────────── RT60 ───────────────────────── -->
+
+<h2 id="rt60">1. What is RT60?</h2>
+
+<p>RT60 is the time (in seconds) it takes for a sound to decay by <strong>60 decibels</strong> after the source stops. In simple terms: how long it takes for a sound to fade to silence in a room.</p>
+
+<p>Clap your hands in a tiled bathroom — the sound rings for a second or two. Do the same in a carpeted bedroom — it dies almost instantly. That difference is RT60.</p>
+
+<div class="diagram">
+  <svg width="700" height="200" viewBox="0 0 700 200">
+    <!-- Axes -->
+    <line x1="60" y1="20" x2="60" y2="170" stroke="#1e2d3d" stroke-width="1"/>
+    <line x1="60" y1="170" x2="660" y2="170" stroke="#1e2d3d" stroke-width="1"/>
+
+    <!-- Y axis labels -->
+    <text x="50" y="30" text-anchor="end" fill="#6b7c93" font-size="10">0 dB</text>
+    <text x="50" y="100" text-anchor="end" fill="#6b7c93" font-size="10">-30 dB</text>
+    <text x="50" y="170" text-anchor="end" fill="#6b7c93" font-size="10">-60 dB</text>
+
+    <!-- X axis label -->
+    <text x="360" y="195" text-anchor="middle" fill="#6b7c93" font-size="10">Time</text>
+
+    <!-- -60dB reference line -->
+    <line x1="60" y1="170" x2="660" y2="170" stroke="#e74c3c" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+
+    <!-- Short RT60 decay (dead room ~0.5s) -->
+    <path d="M 80,25 Q 120,25 160,165" fill="none" stroke="#2e86de" stroke-width="2" opacity="0.7"/>
+    <text x="170" y="160" fill="#2e86de" font-size="9" opacity="0.8">Dead room (~0.5s)</text>
+
+    <!-- Target RT60 decay (~2s) -->
+    <path d="M 80,25 Q 180,30 360,165" fill="none" stroke="#27ae60" stroke-width="2.5"/>
+    <text x="370" y="155" fill="#27ae60" font-size="10" font-weight="600">Target (~2.0s)</text>
+
+    <!-- Long RT60 decay (untreated dome ~25s) - still decaying at edge -->
+    <path d="M 80,25 Q 300,28 650,80" fill="none" stroke="#e74c3c" stroke-width="2" opacity="0.7"/>
+    <text x="540" y="72" fill="#e74c3c" font-size="9" opacity="0.8">Untreated dome (~25s+)</text>
+
+    <!-- Sound source marker -->
+    <circle cx="80" cy="25" r="4" fill="#f39c12"/>
+    <text x="90" y="18" fill="#f39c12" font-size="9">Sound stops</text>
+
+    <!-- RT60 bracket -->
+    <line x1="80" y1="180" x2="360" y2="180" stroke="#27ae60" stroke-width="1" opacity="0.5"/>
+    <line x1="80" y1="177" x2="80" y2="183" stroke="#27ae60" stroke-width="1" opacity="0.5"/>
+    <line x1="360" y1="177" x2="360" y2="183" stroke="#27ae60" stroke-width="1" opacity="0.5"/>
+    <text x="220" y="190" text-anchor="middle" fill="#27ae60" font-size="9" opacity="0.7">RT60</text>
+  </svg>
+  <div class="caption">Sound energy decay over time. RT60 is measured from when the source stops to when the level drops 60 dB (to one-millionth of original energy).</div>
+</div>
+
+<p>RT60 is measured separately for each <strong>frequency band</strong> (125 Hz, 250 Hz, 500 Hz, 1000 Hz, 2000 Hz, 4000 Hz) because materials absorb different frequencies at different rates. A room might have long reverb at 125 Hz (bass takes ages to die away) but short reverb at 4000 Hz (treble gets absorbed quickly by air alone).</p>
+
+<!-- ───────────────────────── WHY TARGET ───────────────────────── -->
+
+<h2 id="why-target">2. Why the target matters for sound healing</h2>
+
+<div class="comparison">
+  <div class="card bad">
+    <h4>Too long (>4s)</h4>
+    <p>Every gong strike piles on top of the last. The practitioner loses control — individual tones become an unintelligible wash. Participants at different positions hear completely different things.</p>
+  </div>
+  <div class="card good">
+    <h4>Target (1.5–2.5s)</h4>
+    <p>Each tone has time to bloom and fill the space, then fades cleanly before the next arrives. The reverb adds warmth and immersion without chaos. The practitioner can layer sounds intentionally.</p>
+  </div>
+  <div class="card warn">
+    <h4>Too short (<1s)</h4>
+    <p>The room feels dead. Crystal bowls lose their sustain and shimmer. Gongs sound flat and lifeless. You lose the immersive, enveloping quality that makes a sphere special.</p>
+  </div>
+</div>
+
+<p>The <strong>Yang Sphere</strong> targets <strong>1.8–2.2 seconds</strong> — slightly longer because the larger volume benefits from more spaciousness. The <strong>Yin Sphere</strong> targets <strong>1.5–1.8 seconds</strong> — tighter for the more intimate space.</p>
+
+<p>Some controlled reverb is <strong>desirable</strong> for singing bowls and gongs. The goal is not to eliminate reverberation, but to tame it from chaotic (25+ seconds untreated) to musical (around 2 seconds).</p>
+
+<!-- ───────────────────────── METHODS ───────────────────────── -->
+
+<h2 id="methods">3. Calculation methods</h2>
+
+<p>There are multiple formulas for estimating RT60. Each makes different assumptions about the room. We use all three and compare:</p>
+
+<table class="method-table">
+  <tr>
+    <th>Method</th>
+    <th>Formula</th>
+    <th>Best for</th>
+    <th>Our use</th>
+  </tr>
+  <tr>
+    <td><strong>Sabine</strong></td>
+    <td>RT60 = 0.161 × V / A</td>
+    <td>Rooms with low, uniform absorption (concert halls, untreated spaces)</td>
+    <td>Baseline — overestimates RT60 when treatment is heavy</td>
+  </tr>
+  <tr>
+    <td><strong>Eyring</strong></td>
+    <td>RT60 = 0.161 × V / (−S × ln(1−ᾱ))</td>
+    <td>Rooms with moderate-to-high absorption — treated rooms</td>
+    <td><strong>Primary method</strong> — most accurate for our treated domes</td>
+  </tr>
+  <tr>
+    <td><strong>Fitzroy</strong></td>
+    <td>Weighted average across surface groups</td>
+    <td>Non-uniform absorption (one wall treated, others bare)</td>
+    <td>Cross-check — useful since our dome top vs. walls vs. floor differ significantly</td>
+  </tr>
+</table>
+
+<p>Where: <strong>V</strong> = room volume (m³), <strong>A</strong> = total absorption area (m²), <strong>S</strong> = total surface area (m²), <strong>ᾱ</strong> = average absorption coefficient.</p>
+
+<div class="diagram">
+  <svg width="500" height="160" viewBox="0 0 500 160">
+    <!-- Simple visual: V / A relationship -->
+    <rect x="40" y="20" width="120" height="80" rx="4" fill="#111827" stroke="#2a3f5f" stroke-width="1"/>
+    <text x="100" y="55" text-anchor="middle" fill="#c8d6e5" font-size="11">Big Volume</text>
+    <text x="100" y="72" text-anchor="middle" fill="#6b7c93" font-size="9">1,591 m³</text>
+    <text x="100" y="115" text-anchor="middle" fill="#6b7c93" font-size="10">÷</text>
+
+    <rect x="40" y="125" width="120" height="25" rx="4" fill="#111827" stroke="#f39c12" stroke-width="1"/>
+    <text x="100" y="142" text-anchor="middle" fill="#f39c12" font-size="9">Small absorption</text>
+
+    <text x="190" y="65" fill="#6b7c93" font-size="20">=</text>
+
+    <text x="230" y="60" fill="#e74c3c" font-size="14" font-weight="600">Long RT60</text>
+    <text x="230" y="78" fill="#6b7c93" font-size="10">Sound bounces many times</text>
+    <text x="230" y="92" fill="#6b7c93" font-size="10">before losing energy</text>
+
+    <!-- Arrow -->
+    <text x="350" y="65" fill="#6b7c93" font-size="16">→</text>
+
+    <text x="380" y="55" fill="#27ae60" font-size="11" font-weight="500">Add treatment</text>
+    <text x="380" y="72" fill="#27ae60" font-size="11" font-weight="500">= more absorption</text>
+    <text x="380" y="89" fill="#27ae60" font-size="11" font-weight="500">= shorter RT60</text>
+  </svg>
+  <div class="caption">RT60 is a ratio: large volume with little absorption = long reverb. Adding absorptive treatment increases A, bringing RT60 down.</div>
+</div>
+
+<p>We use <strong>Eyring</strong> as the primary method because the treated dome has significant absorption (30–50% of surfaces covered). Sabine would overestimate by 15–20% in this case. An acoustic consultant running ODEON or CATT-Acoustic would validate against Eyring as their baseline too.</p>
+
+<!-- ───────────────────────── INSTRUMENTS ───────────────────────── -->
+
+<h2 id="instruments">4. Instrument frequency ranges</h2>
+
+<p>Different healing instruments produce energy at different frequencies, which interact with the room treatment differently:</p>
+
+<div class="instrument-row">
+  <div class="name">Crystal Bowls</div>
+  <div class="detail">
+    <div class="freq-bar" style="background: linear-gradient(90deg, transparent 8%, #2e86de 8%, #2e86de 55%, transparent 55%); opacity:0.5;"></div>
+    <div class="freq-label"><span>30 Hz</span><span>110–660 Hz fundamental</span><span>10 kHz</span></div>
+    Pure, sustained tones with clean harmonics up to ~2 kHz. Very narrow spectral peaks make <strong>comb filtering painfully obvious</strong> — diffusers are critical for crystal bowls. Phase cancellation from the curved dome causes different tonal coloring at different listening positions unless broken up by scattering surfaces.
+  </div>
+</div>
+
+<div class="instrument-row">
+  <div class="name">Tibetan Bowls</div>
+  <div class="detail">
+    <div class="freq-bar" style="background: linear-gradient(90deg, transparent 6%, #f39c12 6%, #f39c12 42%, #f39c1266 42%, #f39c1233 70%, transparent 70%); opacity:0.5;"></div>
+    <div class="freq-label"><span>30 Hz</span><span>100–500 Hz + overtones to 5 kHz</span><span>10 kHz</span></div>
+    Rich, complex overtone series with multiple simultaneous frequencies. The <strong>most forgiving</strong> instrument — broadband overtones naturally mask comb filtering. Will sound decent even with less treatment.
+  </div>
+</div>
+
+<div class="instrument-row">
+  <div class="name">Gongs</div>
+  <div class="detail">
+    <div class="freq-bar" style="background: linear-gradient(90deg, #e74c3c 0%, #e74c3c 25%, #e74c3c88 25%, #e74c3c44 60%, #e74c3c22 80%, transparent 95%); opacity:0.5;"></div>
+    <div class="freq-label"><span>30 Hz</span><span>30–300 Hz fund. + dense overtones to 10 kHz+</span><span>10 kHz</span></div>
+    Deep sub-bass through full spectrum. The <strong>most demanding</strong> instrument acoustically. The 30–120 Hz energy is exactly where the sub-floor plenum bass trap matters most — without it, low-frequency buildup makes everything muddy. Also where untreated RT60 is worst (47s at 125 Hz).
+  </div>
+</div>
+
+<p>The simulation runs at <strong>500 Hz</strong> by default for the ray tracer (mid-range, representative), but the RT60 chart shows all six octave bands so you can see how each frequency is affected by the treatment.</p>
+
+<!-- ───────────────────────── TREATMENT ───────────────────────── -->
+
+<h2 id="treatment">5. Treatment zones explained</h2>
+
+<div class="diagram">
+  <svg width="400" height="380" viewBox="0 0 400 380">
+    <!-- Dome outline -->
+    <path d="M 60,310 A 170,170 0 1,1 340,310" fill="#0f1729" stroke="#2a3f5f" stroke-width="1.5"/>
+
+    <!-- Floor -->
+    <line x1="60" y1="310" x2="340" y2="310" stroke="#3a4f6f" stroke-width="2"/>
+
+    <!-- Diffuser zone (upper) -->
+    <path d="M 108,175 A 160,160 0 0,1 292,175" fill="none" stroke="#2e86de" stroke-width="10" stroke-opacity="0.3" stroke-linecap="round"/>
+
+    <!-- Absorber zone (mid) -->
+    <path d="M 73,265 A 160,160 0 0,1 108,175" fill="none" stroke="#f39c12" stroke-width="8" stroke-opacity="0.25" stroke-linecap="round"/>
+    <path d="M 327,265 A 160,160 0 0,0 292,175" fill="none" stroke="#f39c12" stroke-width="8" stroke-opacity="0.25" stroke-linecap="round"/>
+
+    <!-- Plenum -->
+    <rect x="60" y="310" width="280" height="14" fill="#0d1520" stroke="#1a2535" stroke-width="0.5"/>
+
+    <!-- Labels with lines -->
+    <line x1="292" y1="140" x2="355" y2="120" stroke="#2e86de" stroke-width="0.5" opacity="0.5"/>
+    <text x="358" y="115" fill="#2e86de" font-size="10" font-weight="500">Diffusers</text>
+    <text x="358" y="128" fill="#2e86de" font-size="8" opacity="0.7">QRD panels or profiled plaster</text>
+    <text x="358" y="140" fill="#2e86de" font-size="8" opacity="0.7">Break up focal reflections</text>
+    <text x="358" y="152" fill="#2e86de" font-size="8" opacity="0.7">into scattered energy</text>
+
+    <line x1="327" y1="240" x2="355" y2="220" stroke="#f39c12" stroke-width="0.5" opacity="0.5"/>
+    <text x="358" y="215" fill="#f39c12" font-size="10" font-weight="500">Absorbers</text>
+    <text x="358" y="228" fill="#f39c12" font-size="8" opacity="0.7">Perforated panels + mineral wool</text>
+    <text x="358" y="240" fill="#f39c12" font-size="8" opacity="0.7">Reduce RT60 to target range</text>
+    <text x="358" y="252" fill="#f39c12" font-size="8" opacity="0.7">by absorbing mid-frequencies</text>
+
+    <text x="200" y="323" text-anchor="middle" fill="#6b7c93" font-size="8">Plenum bass trap</text>
+
+    <!-- Untreated label -->
+    <text x="8" y="290" fill="#6b7c93" font-size="8" opacity="0.6">Untreated</text>
+    <text x="8" y="300" fill="#6b7c93" font-size="8" opacity="0.6">lower wall</text>
+
+    <!-- Oculus -->
+    <line x1="188" y1="48" x2="212" y2="48" stroke="#5a7a9a" stroke-width="2"/>
+    <text x="200" y="42" text-anchor="middle" fill="#6b7c93" font-size="8">Oculus</text>
+
+    <!-- Center marker -->
+    <circle cx="200" cy="200" r="2" fill="#5a7a9a" opacity="0.5"/>
+    <text x="210" y="198" fill="#5a7a9a" font-size="7" opacity="0.5">Center of sphere</text>
+  </svg>
+  <div class="caption">Cross-section showing treatment zones. Zone size and position vary by scenario — the simulation adjusts these to compare options.</div>
+</div>
+
+<p><strong>Diffusers</strong> (blue) are mounted on the upper dome. They don't absorb much sound — instead they <strong>scatter</strong> it in many directions. This breaks up the coherent focal reflection that would otherwise create a hot spot above the participants. Think of throwing a ball at a flat wall (specular reflection — it bounces right back) versus throwing it at a pile of rocks (diffuse scattering — energy goes everywhere).</p>
+
+<p><strong>Absorbers</strong> (orange) are mounted on the mid-dome walls. They convert sound energy into heat via friction in fibrous or porous material. This is what actually <strong>reduces RT60</strong> — each reflection loses more energy, so the sound dies away faster.</p>
+
+<p><strong>Perforated floor / plenum bass trap</strong> handles low frequencies (bass). The air cavity under the floor acts as a resonant absorber tuned to the 30–120 Hz range where gongs and large bowls produce their fundamental tones. Without this, bass builds up uncontrollably in the dome.</p>
+
+<p>The simulation lets you compare different zone sizes — for example, diffusers covering the upper 40% versus 25% of the dome — to find the right balance between acoustic performance and material cost.</p>
+
+<!-- ───────────────────────── FOCAL ───────────────────────── -->
+
+<h2 id="focal">6. The focal convergence problem</h2>
+
+<p>This is the most important acoustic issue specific to spherical rooms.</p>
+
+<p>A concave surface acts like a focusing mirror for sound. When you place a sound source inside a sphere, the curved walls reflect sound back toward a <strong>focal zone</strong> near the center of curvature. In the Yang Sphere, this focal zone is about <strong>3.1 meters above the floor</strong> — directly above lying participants.</p>
+
+<div class="diagram">
+  <svg width="600" height="260" viewBox="0 0 600 260">
+    <!-- Two side-by-side diagrams -->
+
+    <!-- LEFT: Without treatment -->
+    <text x="150" y="18" text-anchor="middle" fill="#e74c3c" font-size="11" font-weight="500">Without treatment</text>
+
+    <!-- Dome -->
+    <path d="M 30,220 A 120,120 0 1,1 270,220" fill="#0f1729" stroke="#2a3f5f" stroke-width="1"/>
+    <line x1="30" y1="220" x2="270" y2="220" stroke="#3a4f6f" stroke-width="1.5"/>
+
+    <!-- Source -->
+    <circle cx="150" cy="215" r="4" fill="#e74c3c"/>
+
+    <!-- Rays converging -->
+    <line x1="150" y1="215" x2="80" y2="120" stroke="#e74c3c" stroke-width="0.8" opacity="0.5"/>
+    <line x1="80" y1="120" x2="148" y2="145" stroke="#e74c3c" stroke-width="0.8" opacity="0.5" stroke-dasharray="3,3"/>
+
+    <line x1="150" y1="215" x2="220" y2="120" stroke="#e74c3c" stroke-width="0.8" opacity="0.5"/>
+    <line x1="220" y1="120" x2="152" y2="145" stroke="#e74c3c" stroke-width="0.8" opacity="0.5" stroke-dasharray="3,3"/>
+
+    <line x1="150" y1="215" x2="150" y2="35" stroke="#e74c3c" stroke-width="0.8" opacity="0.5"/>
+    <line x1="150" y1="35" x2="150" y2="145" stroke="#e74c3c" stroke-width="0.8" opacity="0.5" stroke-dasharray="3,3"/>
+
+    <!-- Focal zone -->
+    <circle cx="150" cy="145" r="15" fill="#e74c3c" opacity="0.15"/>
+    <circle cx="150" cy="145" r="3" fill="#e74c3c" opacity="0.5"/>
+    <text x="175" y="142" fill="#e74c3c" font-size="8">Focal zone</text>
+    <text x="175" y="153" fill="#e74c3c" font-size="8">(hot spot)</text>
+
+    <!-- Participants -->
+    <ellipse cx="100" cy="218" rx="10" ry="2.5" fill="#6b7c93" opacity="0.4"/>
+    <ellipse cx="200" cy="218" rx="10" ry="2.5" fill="#6b7c93" opacity="0.4"/>
+
+    <!-- RIGHT: With treatment -->
+    <text x="450" y="18" text-anchor="middle" fill="#27ae60" font-size="11" font-weight="500">With diffusers + elevated stage</text>
+
+    <!-- Dome -->
+    <path d="M 330,220 A 120,120 0 1,1 570,220" fill="#0f1729" stroke="#2a3f5f" stroke-width="1"/>
+    <line x1="330" y1="220" x2="570" y2="220" stroke="#3a4f6f" stroke-width="1.5"/>
+
+    <!-- Diffuser zone highlight -->
+    <path d="M 375,100 A 110,110 0 0,1 525,100" fill="none" stroke="#2e86de" stroke-width="6" stroke-opacity="0.2"/>
+
+    <!-- Source (elevated) -->
+    <rect x="440" y="205" width="20" height="15" rx="1" fill="#1a3a2a" stroke="#27ae60" stroke-width="0.8" opacity="0.7"/>
+    <circle cx="450" cy="202" r="4" fill="#27ae60"/>
+
+    <!-- Rays scattering -->
+    <line x1="450" y1="202" x2="380" y2="110" stroke="#27ae60" stroke-width="0.8" opacity="0.5"/>
+    <!-- Scattered -->
+    <line x1="380" y1="110" x2="360" y2="218" stroke="#27ae60" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,3"/>
+    <line x1="380" y1="110" x2="420" y2="218" stroke="#27ae60" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,3"/>
+    <line x1="380" y1="110" x2="500" y2="218" stroke="#27ae60" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,3"/>
+
+    <line x1="450" y1="202" x2="520" y2="110" stroke="#27ae60" stroke-width="0.8" opacity="0.5"/>
+    <line x1="520" y1="110" x2="540" y2="218" stroke="#27ae60" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,3"/>
+    <line x1="520" y1="110" x2="470" y2="218" stroke="#27ae60" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,3"/>
+    <line x1="520" y1="110" x2="400" y2="218" stroke="#27ae60" stroke-width="0.6" opacity="0.3" stroke-dasharray="3,3"/>
+
+    <!-- No focal zone -->
+    <circle cx="450" cy="145" r="15" fill="#27ae60" opacity="0.04"/>
+    <text x="475" y="145" fill="#27ae60" font-size="8" opacity="0.6">No hot spot</text>
+
+    <!-- Participants -->
+    <ellipse cx="400" cy="218" rx="10" ry="2.5" fill="#6b7c93" opacity="0.4"/>
+    <ellipse cx="500" cy="218" rx="10" ry="2.5" fill="#6b7c93" opacity="0.4"/>
+  </svg>
+  <div class="caption">Left: untreated dome focuses all reflections to a single zone above participants. Right: diffusers scatter the reflections evenly across the floor, and the elevated stage shifts the source away from the focal plane.</div>
+</div>
+
+<p>The <strong>elevated stage</strong> (raising the source 30–50 cm above the floor) helps because it shifts the source away from the dome's center of curvature. The reflected wavefronts arrive at slightly different angles, causing the focal zone to blur and spread. Combined with diffusers, the convergence effect drops significantly.</p>
+
+<!-- ───────────────────────── READING ───────────────────────── -->
+
+<h2 id="reading">7. How to read the simulation</h2>
+
+<h3>Ray Trace (left panel)</h3>
+<p>Shows a 2D cross-section of the dome with acoustic rays traced from the source. Each line is a ray bouncing between dome and floor. <strong>Brighter lines = more energy</strong> remaining. With diffusers, you'll see rays scattering in many directions (good). Without treatment, rays converge tightly at the focal zone (bad).</p>
+
+<h3>RT60 Chart (right panel)</h3>
+<p>Bar chart showing RT60 at each frequency band. <strong>Green shaded band = target range.</strong> Bars within the green band are ideal. Red/tall bars mean that frequency takes too long to decay. Blue/short bars mean over-damped at that frequency. Watch 125 Hz especially — it's hardest to control and most important for gongs.</p>
+
+<h3>Floor Energy Distribution (bottom panel)</h3>
+<p>Shows how much acoustic energy arrives at each position along the floor. A <strong>flat curve = even distribution</strong> (participants hear the same thing everywhere). A <strong>sharp peak at center = focal hot spot</strong> (people near the middle get blasted, edges are quiet). Good treatment flattens this curve.</p>
+
+<h3>Switching scenarios</h3>
+<p>Click scenario buttons to compare treatments instantly. Watch how the zone boundaries (blue and orange arcs), ray patterns, RT60 values, and floor energy all change together. The zone sizes vary between scenarios — not just the materials.</p>
+
+</div>
+</body>
+</html>
