@@ -12,45 +12,31 @@
   }
 }
 </script>
+<link rel="stylesheet" href="styles.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #0a0e17; color: #c8d6e5; font-family: system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-nav { background: #111827; border-bottom: 1px solid #1e2d3d; padding: 12px 30px; display: flex; gap: 20px; align-items: center; flex-shrink: 0; }
-nav a { color: #6b7c93; text-decoration: none; font-size: 0.85rem; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
-nav a:hover { color: #2e86de; background: #0d1a2d; }
-nav a.active { color: #2e86de; background: #0d1a2d; border: 1px solid #2e86de; }
-nav .logo { font-size: 1rem; font-weight: 600; color: #e8ecf1; letter-spacing: 0.03em; margin-right: auto; }
-.main { display: flex; flex: 1; overflow: hidden; }
-#sidebar { width: 260px; background: #111827; border-right: 1px solid #1e2d3d; padding: 16px; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; gap: 18px; }
-#canvas-wrap { flex: 1; position: relative; }
+body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+#sidebar { display: flex; flex-direction: column; gap: 18px; }
 #canvas-wrap canvas { display: block; width: 100% !important; height: 100% !important; }
-.section-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #6b7c93; margin-bottom: 8px; }
-.btn-group { display: flex; flex-direction: column; gap: 4px; }
-.btn { background: #1e2d3d; border: 1px solid #2a3f5f; color: #c8d6e5; padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; text-align: left; transition: all 0.15s; }
-.btn:hover { background: #0d1a2d; border-color: #2e86de; }
-.btn.active { background: #0d1a2d; border-color: #2e86de; color: #2e86de; }
-.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
-.toggle-label { font-size: 0.82rem; color: #c8d6e5; }
-.toggle { position: relative; width: 36px; height: 20px; }
-.toggle input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #2a3f5f; border-radius: 10px; transition: 0.2s; }
-.toggle-slider:before { content: ""; position: absolute; height: 14px; width: 14px; left: 3px; bottom: 3px; background: #6b7c93; border-radius: 50%; transition: 0.2s; }
-input:checked + .toggle-slider { background: #2e86de; }
-input:checked + .toggle-slider:before { transform: translateX(16px); background: white; }
-.slider-row { display: flex; flex-direction: column; gap: 4px; }
-.slider-row input[type=range] { width: 100%; accent-color: #2e86de; }
-.slider-val { font-size: 0.75rem; color: #6b7c93; text-align: right; }
-#desc-bar { background: #111827; border-top: 1px solid #1e2d3d; padding: 8px 20px; font-size: 0.78rem; color: #6b7c93; flex-shrink: 0; min-height: 32px; }
 </style>
 </head>
 <body>
 <nav>
-  <span class="logo">CMSHC Acoustics</span>
-  <a href="index.html">Simulation</a>
-  <a href="learn.html">Learn</a>
-  <a href="viewer3d.html" class="active">3D Viewer</a>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      CMSHC
+      <span class="nav-logo-sub">Sound Healing Center</span>
+    </a>
+    <button class="nav-toggle" onclick="document.body.classList.toggle('nav-open')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-menu">
+      <a href="index.html">Simulation</a>
+      <a href="learn.html">Learn</a>
+      <a href="viewer3d.html" class="active">3D Viewer</a>
+    </div>
+  </div>
 </nav>
-<div class="main">
+<div class="viewer-main">
   <div id="sidebar">
     <div>
       <div class="section-title">Room</div>
@@ -100,7 +86,7 @@ const DATA = {"rooms":{"yang":{"name":"Yang Sphere","inner_radius":7.855,"center
 const wrap = document.getElementById('canvas-wrap');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x0a0e17);
+renderer.setClearColor(0x0c0a0f);
 wrap.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
@@ -112,8 +98,8 @@ controls.minDistance = 2;
 controls.maxDistance = 80;
 
 // Ambient + directional light for the dome mesh
-scene.add(new THREE.AmbientLight(0x334466, 2));
-const dirLight = new THREE.DirectionalLight(0x6699cc, 1.2);
+scene.add(new THREE.AmbientLight(0x2a2435, 2));
+const dirLight = new THREE.DirectionalLight(0x8a7d99, 1.2);
 dirLight.position.set(5, 15, 8);
 scene.add(dirLight);
 
@@ -192,7 +178,7 @@ function buildDomeMesh(room) {
   // Translucent dome shell
   const geo = new THREE.SphereGeometry(R, 48, 32, 0, Math.PI * 2, 0, af);
   const mat = new THREE.MeshPhongMaterial({
-    color: 0x1a2a3a,
+    color: 0x16131c,
     transparent: true,
     opacity: 0.35,
     side: THREE.BackSide,
@@ -202,7 +188,7 @@ function buildDomeMesh(room) {
 
   // Wireframe overlay
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x2a4060,
+    color: 0x4a3d5c,
     wireframe: true,
     transparent: true,
     opacity: 0.15,
@@ -218,7 +204,7 @@ function buildFloor(room) {
   const geo = new THREE.CircleGeometry(room.floor_radius, 64);
   geo.rotateX(-Math.PI / 2);
   const mat = new THREE.MeshBasicMaterial({
-    color: 0x0d1520,
+    color: 0x0c0a0f,
     transparent: true,
     opacity: 0.9,
     side: THREE.DoubleSide,
@@ -252,7 +238,7 @@ function buildZoneMeshes(room, zones) {
   const diffLen = zones.diffusers.angle_end - diffStart;
   const diffGeo = new THREE.SphereGeometry(R * 0.99, 48, 24, 0, Math.PI * 2, diffStart, diffLen);
   const diffMat = new THREE.MeshBasicMaterial({
-    color: 0x2e86de, transparent: true, opacity: 0.18, side: THREE.BackSide,
+    color: 0x6b8fc4, transparent: true, opacity: 0.18, side: THREE.BackSide,
   });
   const diffMesh = new THREE.Mesh(diffGeo, diffMat);
   diffMesh.position.y = ch;
@@ -262,7 +248,7 @@ function buildZoneMeshes(room, zones) {
   const absLen = zones.absorbers.angle_end - absStart;
   const absGeo = new THREE.SphereGeometry(R * 0.99, 48, 24, 0, Math.PI * 2, absStart, absLen);
   const absMat = new THREE.MeshBasicMaterial({
-    color: 0xf39c12, transparent: true, opacity: 0.14, side: THREE.BackSide,
+    color: 0xd4a054, transparent: true, opacity: 0.14, side: THREE.BackSide,
   });
   const absMesh = new THREE.Mesh(absGeo, absMat);
   absMesh.position.y = ch;
@@ -315,7 +301,7 @@ function buildRayLines(segments, maxSegs) {
 
 function buildSourceMarker(height) {
   const geo = new THREE.SphereGeometry(0.12, 16, 16);
-  const mat = new THREE.MeshBasicMaterial({ color: 0x27ae60 });
+  const mat = new THREE.MeshBasicMaterial({ color: 0x6db585 });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.position.set(0, height, 0);
 
@@ -323,7 +309,7 @@ function buildSourceMarker(height) {
   const ringGeo = new THREE.RingGeometry(0.2, 0.28, 32);
   ringGeo.rotateX(-Math.PI / 2);
   const ringMat = new THREE.MeshBasicMaterial({
-    color: 0x27ae60, transparent: true, opacity: 0.4, side: THREE.DoubleSide,
+    color: 0x6db585, transparent: true, opacity: 0.4, side: THREE.DoubleSide,
   });
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.position.set(0, height + 0.02, 0);
@@ -345,7 +331,7 @@ function initRoom(roomKey) {
   // Floor edge ring
   const edgeGeo = new THREE.RingGeometry(room.floor_radius - 0.03, room.floor_radius + 0.03, 80);
   edgeGeo.rotateX(-Math.PI / 2);
-  const edge = new THREE.Mesh(edgeGeo, new THREE.MeshBasicMaterial({ color: 0x3a4f6f, side: THREE.DoubleSide }));
+  const edge = new THREE.Mesh(edgeGeo, new THREE.MeshBasicMaterial({ color: 0x4a3d5c, side: THREE.DoubleSide }));
 
   group.add(domeMesh, wireMesh, floor, edge);
 
@@ -386,7 +372,8 @@ function updateScenario(roomKey, scenarioName) {
   const zm = buildZoneMeshes(roomData, sc.zones);
   state.group.add(zm);
   state.zoneMeshes = zm;
-  zm.visible = document.getElementById('tog-zones').checked;
+  const isUntreated = scenarioName === 'Untreated';
+  zm.visible = !isUntreated && document.getElementById('tog-zones').checked;
 
   // Ray lines
   const rl = buildRayLines(sc.segments);

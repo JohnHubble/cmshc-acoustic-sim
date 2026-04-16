@@ -4,57 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CMSHC Acoustic Simulation</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: #0a0e17; color: #c8d6e5; font-family: 'Segoe UI', system-ui, sans-serif; padding: 0; }
-nav { background: #111827; border-bottom: 1px solid #1e2d3d; padding: 12px 30px; display: flex; gap: 20px; align-items: center; position: sticky; top: 0; z-index: 100; }
-nav a { color: #6b7c93; text-decoration: none; font-size: 0.85rem; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
-nav a:hover { color: #2e86de; background: #0d1a2d; }
-nav a.active { color: #2e86de; background: #0d1a2d; border: 1px solid #2e86de; }
-nav .logo { font-size: 1rem; font-weight: 600; color: #e8ecf1; letter-spacing: 0.03em; margin-right: auto; }
-.main-content { padding: 30px; }
-h1 { font-size: 1.5rem; font-weight: 500; letter-spacing: 0.04em; margin-bottom: 4px; }
-.subtitle { font-size: 0.85rem; color: #6b7c93; margin-bottom: 25px; }
-.controls { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
-.controls label { font-size: 0.8rem; color: #6b7c93; }
-.btn { background: #111827; border: 1px solid #1e2d3d; color: #6b7c93; padding: 6px 14px;
-        border-radius: 6px; cursor: pointer; font-size: 0.78rem; transition: all 0.2s; }
-.btn.active { border-color: #2e86de; color: #2e86de; background: #0d1a2d; }
-.btn:hover { border-color: #2e86de; }
-.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.panel { background: #111827; border: 1px solid #1e2d3d; border-radius: 8px; padding: 16px; }
-.panel h3 { font-size: 0.9rem; font-weight: 500; margin-bottom: 12px; color: #e8ecf1; }
-.rt60-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 10px; }
-.rt60-cell { text-align: center; padding: 6px 4px; border-radius: 4px; font-size: 0.75rem; }
-.rt60-cell .freq { color: #6b7c93; font-size: 0.65rem; }
-.rt60-cell .val { font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
-.stats { font-size: 0.78rem; color: #6b7c93; line-height: 1.8; margin-top: 10px; }
-.stats strong { color: #c8d6e5; }
-.scenario-desc { font-size: 0.75rem; color: #6b7c93; margin-bottom: 12px; line-height: 1.5; }
-svg { display: block; }
-.energy-bar { fill: #f39c12; opacity: 0.6; }
-.target-band { fill: #27ae60; opacity: 0.08; }
-@media (max-width: 900px) { .panels { grid-template-columns: 1fr; } }
-</style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav>
-  <span class="logo">CMSHC Acoustics</span>
-  <a href="index.html" class="active">Simulation</a>
-  <a href="learn.html">Learn</a>
-  <a href="viewer3d.html">3D Viewer</a>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      CMSHC
+      <span class="nav-logo-sub">Sound Healing Center</span>
+    </a>
+    <button class="nav-toggle" onclick="document.body.classList.toggle('nav-open')" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-menu">
+      <a href="index.html" class="active">Simulation</a>
+      <a href="learn.html">Learn</a>
+      <a href="viewer3d.html">3D Viewer</a>
+    </div>
+  </div>
 </nav>
 
-<div class="main-content">
+<div class="hero" style="height: 40vh; background: url('assets/hero-simulation.jpg') center/cover no-repeat;">
+  <div class="hero-ripple">
+    <div></div><div></div><div></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Acoustic Simulation</h1>
+    <p class="subtitle">Interactive treatment scenario comparison</p>
+  </div>
+</div>
 
-<h1>CMSHC Acoustic Simulation</h1>
-<p class="subtitle">Interactive treatment scenario comparison</p>
+<div class="main-content">
 
 <div class="controls">
   <label>Room:</label>
   <div id="room-btns"></div>
-  <span style="margin: 0 8px; color:#1e2d3d">|</span>
+  <span style="margin: 0 8px; width:1px; height:20px; background: var(--border-accent); display:inline-block; vertical-align:middle;"></span>
   <label>Scenario:</label>
   <div id="scenario-btns"></div>
 </div>
@@ -151,52 +138,55 @@ function drawRays(room, scenario) {
     const y = ch + R * Math.cos(a);
     pts.push(`${tx(x).toFixed(1)},${ty(y).toFixed(1)}`);
   }
-  svg += `<polygon points="${pts.join(' ')}" fill="#0f1729" stroke="#2a3f5f" stroke-width="1.5"/>`;
+  svg += `<polygon points="${pts.join(' ')}" fill="#16131c" stroke="#4a3d5c" stroke-width="1.5"/>`;
 
-  // Treatment zones — from scenario (varies per scenario), not room
+  // Treatment zones — hidden for Untreated scenario
   const zones = scenario.zones;
-  // Diffusers (both sides)
-  for (const sign of [1, -1]) {
-    let zPts = [];
-    for (let i = 0; i <= 60; i++) {
-      const a = zones.diffusers.angle_start + (zones.diffusers.angle_end - zones.diffusers.angle_start) * i / 60;
-      const x = sign * R * Math.sin(a);
-      const y = ch + R * Math.cos(a);
-      zPts.push(`${tx(x).toFixed(1)},${ty(y).toFixed(1)}`);
+  const isUntreated = scenario.name === 'Untreated';
+  if (!isUntreated) {
+    // Diffusers (both sides)
+    for (const sign of [1, -1]) {
+      let zPts = [];
+      for (let i = 0; i <= 60; i++) {
+        const a = zones.diffusers.angle_start + (zones.diffusers.angle_end - zones.diffusers.angle_start) * i / 60;
+        const x = sign * R * Math.sin(a);
+        const y = ch + R * Math.cos(a);
+        zPts.push(`${tx(x).toFixed(1)},${ty(y).toFixed(1)}`);
+      }
+      svg += `<polyline points="${zPts.join(' ')}" fill="none" stroke="#6b8fc4" stroke-width="6" stroke-opacity="0.3" stroke-linecap="round"/>`;
     }
-    svg += `<polyline points="${zPts.join(' ')}" fill="none" stroke="#2e86de" stroke-width="6" stroke-opacity="0.3" stroke-linecap="round"/>`;
-  }
-  // Absorbers
-  for (const sign of [1, -1]) {
-    let zPts = [];
-    for (let i = 0; i <= 60; i++) {
-      const a = zones.absorbers.angle_start + (zones.absorbers.angle_end - zones.absorbers.angle_start) * i / 60;
-      const x = sign * R * Math.sin(a);
-      const y = ch + R * Math.cos(a);
-      zPts.push(`${tx(x).toFixed(1)},${ty(y).toFixed(1)}`);
+    // Absorbers
+    for (const sign of [1, -1]) {
+      let zPts = [];
+      for (let i = 0; i <= 60; i++) {
+        const a = zones.absorbers.angle_start + (zones.absorbers.angle_end - zones.absorbers.angle_start) * i / 60;
+        const x = sign * R * Math.sin(a);
+        const y = ch + R * Math.cos(a);
+        zPts.push(`${tx(x).toFixed(1)},${ty(y).toFixed(1)}`);
+      }
+      svg += `<polyline points="${zPts.join(' ')}" fill="none" stroke="#d4a054" stroke-width="5" stroke-opacity="0.25" stroke-linecap="round"/>`;
     }
-    svg += `<polyline points="${zPts.join(' ')}" fill="none" stroke="#f39c12" stroke-width="5" stroke-opacity="0.25" stroke-linecap="round"/>`;
+
+    // Zone labels (right side, outside dome)
+    const diffMidA = (zones.diffusers.angle_start + zones.diffusers.angle_end) / 2;
+    const diffLabelY = ty(ch + R * Math.cos(diffMidA));
+    const labelX = tx(R) + 8;
+    svg += `<text x="${labelX}" y="${diffLabelY}" fill="#6b8fc4" font-size="8" opacity="0.8" dominant-baseline="middle">${zones.diffusers.name.replace('Dome ','')}</text>`;
+
+    const absMidA = (zones.absorbers.angle_start + zones.absorbers.angle_end) / 2;
+    const absLabelY = ty(ch + R * Math.cos(absMidA));
+    svg += `<text x="${labelX}" y="${absLabelY}" fill="#d4a054" font-size="8" opacity="0.7" dominant-baseline="middle">${zones.absorbers.name.replace('Dome ','')}</text>`;
   }
-
-  // Zone labels (right side, outside dome)
-  const diffMidA = (zones.diffusers.angle_start + zones.diffusers.angle_end) / 2;
-  const diffLabelY = ty(ch + R * Math.cos(diffMidA));
-  const labelX = tx(R) + 8;
-  svg += `<text x="${labelX}" y="${diffLabelY}" fill="#2e86de" font-size="8" opacity="0.8" dominant-baseline="middle">${zones.diffusers.name.replace('Dome ','')}</text>`;
-
-  const absMidA = (zones.absorbers.angle_start + zones.absorbers.angle_end) / 2;
-  const absLabelY = ty(ch + R * Math.cos(absMidA));
-  svg += `<text x="${labelX}" y="${absLabelY}" fill="#f39c12" font-size="8" opacity="0.7" dominant-baseline="middle">${zones.absorbers.name.replace('Dome ','')}</text>`;
 
   // Floor
-  svg += `<line x1="${tx(-fr)}" y1="${floorY}" x2="${tx(fr)}" y2="${floorY}" stroke="#3a4f6f" stroke-width="2"/>`;
+  svg += `<line x1="${tx(-fr)}" y1="${floorY}" x2="${tx(fr)}" y2="${floorY}" stroke="#4a3d5c" stroke-width="2"/>`;
 
   // Plenum
-  svg += `<rect x="${tx(-fr)}" y="${floorY}" width="${fr*2*scale}" height="12" fill="#0d1520" stroke="#1a2535" stroke-width="0.5"/>`;
+  svg += `<rect x="${tx(-fr)}" y="${floorY}" width="${fr*2*scale}" height="12" fill="#0c0a0f" stroke="#2a2435" stroke-width="0.5"/>`;
 
   // Ray segments
   const isElevated = scenario.source_height > 0.1;
-  const rayColor = isElevated ? '#27ae60' : '#e74c3c';
+  const rayColor = isElevated ? '#6db585' : '#c47070';
   for (const seg of scenario.rays) {
     const alpha = Math.max(0.03, Math.min(0.5, seg.e * 0.4));
     svg += `<line x1="${tx(seg.x0).toFixed(1)}" y1="${ty(seg.y0).toFixed(1)}" x2="${tx(seg.x1).toFixed(1)}" y2="${ty(seg.y1).toFixed(1)}" stroke="${rayColor}" stroke-width="0.5" stroke-opacity="${alpha.toFixed(2)}"/>`;
@@ -214,10 +204,10 @@ function drawRays(room, scenario) {
   }
 
   // Center of sphere
-  svg += `<circle cx="${tx(0)}" cy="${ty(ch)}" r="2" fill="#5a7a9a" opacity="0.4"/>`;
+  svg += `<circle cx="${tx(0)}" cy="${ty(ch)}" r="2" fill="#5ba5a5" opacity="0.4"/>`;
 
   // Dimensions
-  svg += `<text x="${W/2}" y="${H-8}" text-anchor="middle" fill="#4a5a6e" font-size="9">${room.floor_radius*2}m floor</text>`;
+  svg += `<text x="${W/2}" y="${H-8}" text-anchor="middle" fill="#8a7d99" font-size="9">${room.floor_radius*2}m floor</text>`;
 
   svg += '</svg>';
   document.getElementById('ray-container').innerHTML = svg;
@@ -236,8 +226,8 @@ function drawRT60(room, scenario) {
   // Target band
   const tMin = room.target_rt60[0], tMax = room.target_rt60[1];
   svg += `<rect x="40" y="${baseY - tMax * scaleY}" width="${W-60}" height="${(tMax-tMin)*scaleY}" class="target-band"/>`;
-  svg += `<text x="${W-15}" y="${baseY - tMax * scaleY + 12}" fill="#27ae60" font-size="8" text-anchor="end">${tMax}s</text>`;
-  svg += `<text x="${W-15}" y="${baseY - tMin * scaleY - 3}" fill="#27ae60" font-size="8" text-anchor="end">${tMin}s</text>`;
+  svg += `<text x="${W-15}" y="${baseY - tMax * scaleY + 12}" fill="#6db585" font-size="8" text-anchor="end">${tMax}s</text>`;
+  svg += `<text x="${W-15}" y="${baseY - tMin * scaleY - 3}" fill="#6db585" font-size="8" text-anchor="end">${tMin}s</text>`;
 
   // Bars
   for (let i = 0; i < rt60.freqs.length; i++) {
@@ -245,15 +235,15 @@ function drawRT60(room, scenario) {
     const val = rt60.values[i];
     const h = Math.min(val * scaleY, baseY - 20);
     const inTarget = val >= tMin && val <= tMax;
-    const color = inTarget ? '#27ae60' : (val < tMin ? '#2e86de' : '#e74c3c');
+    const color = inTarget ? '#6db585' : (val < tMin ? '#6b8fc4' : '#c47070');
 
     svg += `<rect x="${x}" y="${baseY - h}" width="${barW}" height="${h}" fill="${color}" opacity="0.7" rx="2"/>`;
     svg += `<text x="${x + barW/2}" y="${baseY - h - 4}" text-anchor="middle" fill="${color}" font-size="9" font-weight="600">${val}s</text>`;
-    svg += `<text x="${x + barW/2}" y="${baseY + 14}" text-anchor="middle" fill="#6b7c93" font-size="8">${rt60.freqs[i]}</text>`;
+    svg += `<text x="${x + barW/2}" y="${baseY + 14}" text-anchor="middle" fill="#8a7d99" font-size="8">${rt60.freqs[i]}</text>`;
   }
 
   // Axis
-  svg += `<line x1="40" y1="${baseY}" x2="${W-10}" y2="${baseY}" stroke="#1e2d3d" stroke-width="1"/>`;
+  svg += `<line x1="40" y1="${baseY}" x2="${W-10}" y2="${baseY}" stroke="#2a2435" stroke-width="1"/>`;
 
   svg += '</svg>';
   document.getElementById('rt60-container').innerHTML = svg;
@@ -268,8 +258,8 @@ function drawRT60(room, scenario) {
     const val = rt60.values[i];
     const tMin = room.target_rt60[0], tMax = room.target_rt60[1];
     const inTarget = val >= tMin && val <= tMax;
-    const bg = inTarget ? '#0d2818' : (val < tMin ? '#0d1a2d' : '#2d1215');
-    const color = inTarget ? '#27ae60' : (val < tMin ? '#2e86de' : '#e74c3c');
+    const bg = inTarget ? 'rgba(109,181,133,0.1)' : (val < tMin ? 'rgba(107,143,196,0.1)' : 'rgba(196,112,112,0.1)');
+    const color = inTarget ? '#6db585' : (val < tMin ? '#6b8fc4' : '#c47070');
     grid.innerHTML += `<div class="rt60-cell" style="background:${bg}"><div class="freq">${rt60.freqs[i]} Hz</div><div class="val" style="color:${color}">${val}s</div></div>`;
   }
 }
@@ -293,14 +283,14 @@ function drawEnergy(room, scenario) {
   let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
 
   // Axis
-  svg += `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#1e2d3d" stroke-width="1"/>`;
+  svg += `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#2a2435" stroke-width="1"/>`;
 
   // Center line
-  svg += `<line x1="${bx(0)}" y1="${padT}" x2="${bx(0)}" y2="${H-padB}" stroke="#1e2d3d" stroke-width="0.5" stroke-dasharray="4,4"/>`;
-  svg += `<text x="${bx(0)}" y="${H-5}" text-anchor="middle" fill="#4a5a6e" font-size="8">Center</text>`;
+  svg += `<line x1="${bx(0)}" y1="${padT}" x2="${bx(0)}" y2="${H-padB}" stroke="#2a2435" stroke-width="0.5" stroke-dasharray="4,4"/>`;
+  svg += `<text x="${bx(0)}" y="${H-5}" text-anchor="middle" fill="#8a7d99" font-size="8">Center</text>`;
 
   // Energy curve
-  const color = scenario.source_height > 0.1 ? '#27ae60' : '#f39c12';
+  const color = scenario.source_height > 0.1 ? '#6db585' : '#d4a054';
   let pathD = `M ${bx(bins[0]).toFixed(1)} ${ey(energy[0]).toFixed(1)}`;
   for (let i = 1; i < bins.length; i++) {
     pathD += ` L ${bx(bins[i]).toFixed(1)} ${ey(energy[i]).toFixed(1)}`;
@@ -311,7 +301,7 @@ function drawEnergy(room, scenario) {
 
   // X labels
   for (let x = -Math.floor(room.floor_radius); x <= Math.floor(room.floor_radius); x += 2) {
-    svg += `<text x="${bx(x)}" y="${H-5}" text-anchor="middle" fill="#4a5a6e" font-size="8">${x}m</text>`;
+    svg += `<text x="${bx(x)}" y="${H-5}" text-anchor="middle" fill="#8a7d99" font-size="8">${x}m</text>`;
   }
 
   svg += '</svg>';
@@ -324,8 +314,8 @@ function updateStats(room, scenario) {
   const mean = rt60.mean;
   const status = mean >= target[0] && mean <= target[1] ? '\u2714 In target' :
                  mean < target[0] ? '\u25BC Below target' : '\u25B2 Above target';
-  const statusColor = mean >= target[0] && mean <= target[1] ? '#27ae60' :
-                      mean < target[0] ? '#2e86de' : '#e74c3c';
+  const statusColor = mean >= target[0] && mean <= target[1] ? '#6db585' :
+                      mean < target[0] ? '#6b8fc4' : '#c47070';
 
   document.getElementById('stats').innerHTML =
     `<strong>Mean RT60:</strong> ${mean}s &nbsp; <span style="color:${statusColor}">${status} (${target[0]}-${target[1]}s)</span><br>` +
