@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CMSHC — 3D Acoustic Viewer</title>
+<title>Spatial Study — CMSHC Dome Studies</title>
 <script type="importmap">
 {
   "imports": {
@@ -13,67 +13,79 @@
 }
 </script>
 <link rel="stylesheet" href="styles.css">
-<style>
-body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-#sidebar { display: flex; flex-direction: column; gap: 18px; }
-#canvas-wrap canvas { display: block; width: 100% !important; height: 100% !important; }
-</style>
 </head>
 <body>
-<nav>
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      CMSHC
-      <span class="nav-logo-sub">Sound Healing Center</span>
-    </a>
-    <button class="nav-toggle" onclick="document.body.classList.toggle('nav-open')" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="nav-menu">
+
+<header class="masthead">
+  <div class="masthead__grid">
+    <a href="index.html" class="masthead__wordmark">CMSHC <em>Dome Studies</em></a>
+    <span class="masthead__issue">Vol. 01 · Apr 2026</span>
+    <nav class="masthead__nav">
       <a href="index.html">Simulation</a>
-      <a href="learn.html">Learn</a>
-      <a href="viewer3d.html" class="active">3D Viewer</a>
-    </div>
+      <a href="learn.html">Reader</a>
+      <a href="viewer3d.html" class="is-active">Spatial</a>
+    </nav>
   </div>
-</nav>
-<div class="viewer-main">
-  <div id="sidebar">
+</header>
+
+<div class="viewer">
+  <aside class="viewer__sidenote">
+    <span class="section-marker">§ · Fig. 03</span>
+    <h2 class="viewer__title">Spatial<br>Study</h2>
     <div>
-      <div class="section-title">Room</div>
-      <div class="btn-group" id="room-btns"></div>
+      <div class="viewer__group-label">Sphere</div>
+      <div class="tabs" id="room-btns" style="flex-direction:column; padding-left:0.9rem; gap:0.15rem;"></div>
     </div>
     <div>
-      <div class="section-title">Scenario</div>
-      <div class="btn-group" id="scenario-btns"></div>
+      <div class="viewer__group-label">Scenario</div>
+      <div class="tabs" id="scenario-btns" style="flex-direction:column; padding-left:0.9rem; gap:0.15rem;"></div>
     </div>
     <div>
-      <div class="section-title">Display</div>
-      <div class="toggle-row">
-        <span class="toggle-label">Rays</span>
-        <label class="toggle"><input type="checkbox" id="tog-rays" checked><span class="toggle-slider"></span></label>
-      </div>
-      <div class="toggle-row">
-        <span class="toggle-label">Floor heatmap</span>
-        <label class="toggle"><input type="checkbox" id="tog-heatmap" checked><span class="toggle-slider"></span></label>
-      </div>
-      <div class="toggle-row">
-        <span class="toggle-label">Treatment zones</span>
-        <label class="toggle"><input type="checkbox" id="tog-zones" checked><span class="toggle-slider"></span></label>
-      </div>
-      <div class="toggle-row">
-        <span class="toggle-label">Wireframe</span>
-        <label class="toggle"><input type="checkbox" id="tog-wire"><span class="toggle-slider"></span></label>
-      </div>
-      <div class="slider-row" style="margin-top:10px">
-        <div class="toggle-label">Ray opacity</div>
+      <div class="viewer__group-label">Display</div>
+      <label class="viewer-toggle">
+        <span class="viewer-toggle__name">Rays</span>
+        <input type="checkbox" id="tog-rays" checked>
+        <span class="viewer-toggle__switch"></span>
+      </label>
+      <label class="viewer-toggle">
+        <span class="viewer-toggle__name">Floor heatmap</span>
+        <input type="checkbox" id="tog-heatmap" checked>
+        <span class="viewer-toggle__switch"></span>
+      </label>
+      <label class="viewer-toggle">
+        <span class="viewer-toggle__name">Treatment zones</span>
+        <input type="checkbox" id="tog-zones" checked>
+        <span class="viewer-toggle__switch"></span>
+      </label>
+      <label class="viewer-toggle">
+        <span class="viewer-toggle__name">Wireframe</span>
+        <input type="checkbox" id="tog-wire">
+        <span class="viewer-toggle__switch"></span>
+      </label>
+      <div class="viewer-slider">
+        <div class="viewer-slider__top">
+          <span>Ray opacity</span>
+          <span class="viewer-slider__value" id="ray-opacity-val">40%</span>
+        </div>
         <input type="range" id="ray-opacity" min="5" max="100" value="40">
-        <div class="slider-val" id="ray-opacity-val">40%</div>
       </div>
     </div>
-  </div>
-  <div id="canvas-wrap"></div>
+  </aside>
+  <section class="viewer__canvas-frame">
+    <div class="viewer__canvas-caption">
+      <em>Volumetric ray density · frequency-weighted heatmap</em>
+      <span>Fig. 03</span>
+    </div>
+    <div class="viewer__canvas" id="canvas-wrap"></div>
+    <p class="viewer__desc" id="desc-bar">Select a scenario to begin.</p>
+  </section>
 </div>
-<div id="desc-bar">Select a scenario to begin.</div>
+
+<footer class="colophon">
+  <span class="colophon__ornament">✦</span>
+  <div class="colophon__rule"></div>
+  <p class="colophon__line">Set in <em>Fraunces</em> &amp; <em>Newsreader</em> · Chiang Mai · Spatial Study · April 2026</p>
+</footer>
 
 <script type="module">
 import * as THREE from 'three';
@@ -98,8 +110,8 @@ controls.minDistance = 2;
 controls.maxDistance = 80;
 
 // Ambient + directional light for the dome mesh
-scene.add(new THREE.AmbientLight(0x3d3450, 2.4));
-const dirLight = new THREE.DirectionalLight(0xad9fbf, 1.3);
+scene.add(new THREE.AmbientLight(0x5a4a30, 2.2));
+const dirLight = new THREE.DirectionalLight(0xf0dfa8, 1.3);
 dirLight.position.set(5, 15, 8);
 scene.add(dirLight);
 
@@ -401,7 +413,7 @@ function populateRoomButtons() {
   DATA.room_order.forEach(key => {
     const room = DATA.rooms[key];
     const btn = document.createElement('button');
-    btn.className = 'btn' + (key === currentRoomKey ? ' active' : '');
+    btn.className = 'tab-btn' + (key === currentRoomKey ? ' active' : '');
     btn.textContent = room.name;
     btn.onclick = () => switchRoom(key);
     container.appendChild(btn);
@@ -414,7 +426,7 @@ function populateScenarioButtons(roomKey) {
   const room = DATA.rooms[roomKey];
   room.scenario_order.forEach(name => {
     const btn = document.createElement('button');
-    btn.className = 'btn' + (name === currentScenario ? ' active' : '');
+    btn.className = 'tab-btn' + (name === currentScenario ? ' active' : '');
     btn.textContent = name;
     btn.onclick = () => switchScenario(name);
     container.appendChild(btn);
