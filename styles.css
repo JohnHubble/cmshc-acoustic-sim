@@ -5,22 +5,22 @@
    ========================================================================== */
 
 :root {
-  --bg-deep: #0c0a0f;
-  --bg-surface: #16131c;
-  --bg-elevated: #1e1a26;
-  --border-subtle: #2a2435;
-  --border-accent: #4a3d5c;
-  --text-primary: #ede8f0;
-  --text-body: #c4b8d0;
-  --text-muted: #8a7d99;
-  --accent-gold: #c9a84c;
-  --accent-gold-glow: rgba(201, 168, 76, 0.15);
-  --accent-warm: #d4896a;
-  --accent-teal: #5ba5a5;
-  --sim-green: #6db585;
-  --sim-red: #c47070;
-  --sim-orange: #d4a054;
-  --sim-blue: #6b8fc4;
+  --bg-deep: #1a1523;
+  --bg-surface: #251e32;
+  --bg-elevated: #2e2640;
+  --border-subtle: #3d3450;
+  --border-accent: #6a5a82;
+  --text-primary: #f7f2fa;
+  --text-body: #dfd5ea;
+  --text-muted: #ad9fbf;
+  --accent-gold: #e8c468;
+  --accent-gold-glow: rgba(232, 196, 104, 0.25);
+  --accent-warm: #eb9d7a;
+  --accent-teal: #6ec7c7;
+  --sim-green: #7fd69a;
+  --sim-red: #e88585;
+  --sim-orange: #ebb860;
+  --sim-blue: #85a8e0;
 
   --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -58,7 +58,12 @@ html {
 }
 
 body {
-  background: var(--bg-deep);
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 0%, rgba(232, 196, 104, 0.16), transparent 65%),
+    radial-gradient(ellipse 70% 45% at 90% 35%, rgba(110, 199, 199, 0.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 10% 80%, rgba(235, 157, 122, 0.06), transparent 60%),
+    var(--bg-deep);
+  background-attachment: fixed;
   color: var(--text-body);
   font-family: var(--font-body);
   line-height: 1.6;
@@ -103,7 +108,7 @@ h3 {
 
 p {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.75;
   color: var(--text-body);
 }
@@ -248,10 +253,24 @@ nav a.active {
   justify-content: center;
 }
 
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold) 50%, transparent);
+  opacity: 0.7;
+  z-index: 3;
+  pointer-events: none;
+  box-shadow: 0 0 22px rgba(232, 196, 104, 0.5);
+}
+
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, var(--bg-deep) 100%);
+  background: linear-gradient(to bottom, transparent 0%, transparent 55%, var(--bg-deep) 100%);
   z-index: 1;
 }
 
@@ -269,6 +288,7 @@ nav a.active {
   letter-spacing: -0.02em;
   color: var(--text-primary);
   margin-bottom: var(--space-2);
+  text-shadow: 0 0 36px rgba(232, 196, 104, 0.35), 0 2px 16px rgba(0, 0, 0, 0.6);
 }
 
 .hero .subtitle {
@@ -287,7 +307,7 @@ nav a.active {
 .hero-ripple div {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid var(--accent-gold);
+  border: 1.5px solid var(--accent-gold);
   opacity: 0;
   animation: ripple 4s ease-out infinite;
 }
@@ -321,10 +341,10 @@ nav a.active {
 .btn {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  color: var(--text-muted);
-  padding: 7px 14px;
+  color: var(--text-body);
+  padding: 8px 16px;
   border-radius: var(--radius-pill);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-family: var(--font-body);
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
@@ -339,7 +359,8 @@ nav a.active {
 .btn.active {
   border-color: var(--accent-gold);
   color: var(--accent-gold);
-  background: rgba(201, 168, 76, 0.08);
+  background: rgba(232, 196, 104, 0.18);
+  box-shadow: 0 0 18px rgba(232, 196, 104, 0.28);
 }
 
 .btn-group {
@@ -351,16 +372,34 @@ nav a.active {
 /* Panels */
 
 .panel {
-  background: var(--bg-surface);
+  position: relative;
+  background:
+    linear-gradient(165deg, rgba(232, 196, 104, 0.05) 0%, transparent 38%),
+    var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s;
+  padding: 28px;
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: box-shadow 0.25s, border-color 0.25s;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-gold) 50%, transparent);
+  opacity: 0.75;
+  pointer-events: none;
+  border-radius: 2px;
+  box-shadow: 0 0 14px rgba(232, 196, 104, 0.4);
 }
 
 .panel:hover {
-  box-shadow: var(--shadow-elevated);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-elevated), 0 0 36px rgba(232, 196, 104, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .panel h3 {
@@ -374,7 +413,7 @@ nav a.active {
 .panel h3::after {
   content: '';
   display: block;
-  width: 40px;
+  width: 56px;
   height: 2px;
   background: var(--accent-gold);
   margin-top: 8px;
