@@ -1,1 +1,5 @@
 .claude/
+
+# Raw Midjourney variant output — only the chosen, renamed JPGs live in img/
+img/20*/
+

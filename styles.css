@@ -60,22 +60,24 @@
 
 [data-theme="dark"] ::selection { background: var(--ochre); color: var(--paper-deep); }
 
-/* Remap inline-SVG presentation colors (learn.html diagrams) to dark palette. */
-[data-theme="dark"] svg [stroke="#7c8298"],
-[data-theme="dark"] svg [fill="#7c8298"]   { stroke: var(--ink-mute); fill: var(--ink-mute); }
-[data-theme="dark"] svg [stroke="#1a2036"],
-[data-theme="dark"] svg [fill="#1a2036"]   { stroke: var(--ink); fill: var(--ink); }
-[data-theme="dark"] svg [stroke="#c8922c"],
-[data-theme="dark"] svg [fill="#c8922c"]   { stroke: var(--ochre); fill: var(--ochre); }
-[data-theme="dark"] svg [stroke="#a4751a"],
-[data-theme="dark"] svg [fill="#a4751a"]   { stroke: var(--ochre-deep); fill: var(--ochre-deep); }
-[data-theme="dark"] svg [stroke="#b14b4b"],
-[data-theme="dark"] svg [fill="#b14b4b"]   { stroke: var(--yang); fill: var(--yang); }
-[data-theme="dark"] svg [stroke="#3a6b5a"],
-[data-theme="dark"] svg [fill="#3a6b5a"]   { stroke: var(--yin); fill: var(--yin); }
+/* Remap inline-SVG presentation colors (learn.html diagrams) to dark palette.
+   Fill and stroke must be split — a path with fill="none" stroke="X" must NOT
+   have its fill overridden, or hollow curves render as filled blobs. */
+[data-theme="dark"] svg [stroke="#7c8298"] { stroke: var(--ink-mute); }
+[data-theme="dark"] svg [fill="#7c8298"]   { fill: var(--ink-mute); }
+[data-theme="dark"] svg [stroke="#1a2036"] { stroke: var(--ink); }
+[data-theme="dark"] svg [fill="#1a2036"]   { fill: var(--ink); }
+[data-theme="dark"] svg [stroke="#c8922c"] { stroke: var(--ochre); }
+[data-theme="dark"] svg [fill="#c8922c"]   { fill: var(--ochre); }
+[data-theme="dark"] svg [stroke="#a4751a"] { stroke: var(--ochre-deep); }
+[data-theme="dark"] svg [fill="#a4751a"]   { fill: var(--ochre-deep); }
+[data-theme="dark"] svg [stroke="#b14b4b"] { stroke: var(--yang); }
+[data-theme="dark"] svg [fill="#b14b4b"]   { fill: var(--yang); }
+[data-theme="dark"] svg [stroke="#3a6b5a"] { stroke: var(--yin); }
+[data-theme="dark"] svg [fill="#3a6b5a"]   { fill: var(--yin); }
 [data-theme="dark"] svg [fill="#ede3c9"]   { fill: var(--paper-soft); }
 [data-theme="dark"] svg [fill="#f4ecd8"]   { fill: var(--paper); }
-[data-theme="dark"] svg text                { fill: var(--ink); }
+[data-theme="dark"] svg text               { fill: var(--ink); }
 
 /* ── Reset ───────────────────────────────────────────────────────── */
 
@@ -247,25 +249,54 @@ h1, h2, h3, h4 {
   padding: clamp(4rem, 10vw, 8rem) 0 clamp(3rem, 7vw, 5rem);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 70% 55%;
+  z-index: -2;
+  opacity: 0.42;
+  filter: saturate(0.55) contrast(0.92) sepia(0.12);
 }
 
 .hero::before {
-  /* concentric rings — acoustic echo motif, drawn as a radial gradient for robustness */
+  /* Legibility wash: keeps both the left text column and the right aside readable. */
   content: '';
   position: absolute;
-  top: 50%; right: -14rem;
-  width: 38rem; height: 38rem;
-  transform: translateY(-50%);
-  border-radius: 50%;
+  inset: 0;
+  z-index: -1;
   background:
-    radial-gradient(circle,
-      transparent 0,
-      transparent calc(33% - 1px), var(--rule) 33%, var(--rule) calc(33% + 1px), transparent calc(33% + 2px),
-      transparent calc(55% - 1px), var(--rule) 55%, var(--rule) calc(55% + 1px), transparent calc(55% + 2px),
-      transparent calc(78% - 1px), var(--rule) 78%, var(--rule) calc(78% + 1px), transparent calc(78% + 2px),
-      transparent calc(100% - 1px), var(--rule) 100%);
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--paper) 96%, transparent) 0%,
+      color-mix(in srgb, var(--paper) 78%, transparent) 32%,
+      color-mix(in srgb, var(--paper) 36%, transparent) 60%,
+      color-mix(in srgb, var(--paper) 72%, transparent) 88%,
+      var(--paper) 100%
+    );
   pointer-events: none;
-  opacity: 0.8;
+}
+
+[data-theme="dark"] .hero__backdrop {
+  opacity: 0.68;
+  filter: saturate(0.8) brightness(0.82);
+}
+
+[data-theme="dark"] .hero::before {
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--paper) 94%, transparent) 0%,
+      color-mix(in srgb, var(--paper) 62%, transparent) 32%,
+      color-mix(in srgb, var(--paper) 18%, transparent) 60%,
+      color-mix(in srgb, var(--paper) 55%, transparent) 88%,
+      var(--paper) 100%
+    );
 }
 
 .hero__grid {
@@ -683,7 +714,23 @@ h1, h2, h3, h4 {
   max-width: var(--page-max);
   margin: 0 auto;
   padding: 0 var(--page-pad);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: end;
 }
+
+.reader-hero__plate {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center 35%;
+  filter: saturate(0.8) contrast(0.96);
+  border: 1px solid var(--rule-strong);
+  align-self: stretch;
+}
+
+[data-theme="dark"] .reader-hero__plate { filter: saturate(0.7) brightness(0.82); }
 
 .reader-hero__issue {
   display: grid;
@@ -804,6 +851,20 @@ h1, h2, h3, h4 {
   font-size: 1.12rem;
   line-height: 1.7;
   color: var(--ink);
+}
+
+/* Diagrams bleed beyond the 62ch reading column into the empty right rail,
+   giving SVG text room to render at a legible size. */
+.diagram {
+  margin: 2.5rem 0 2.8rem;
+  margin-right: calc(-220px - clamp(2rem, 4vw, 4rem));
+}
+
+.diagram svg {
+  width: 100%;
+  height: auto;
+  max-width: none;
+  display: block;
 }
 
 .reader__chapter { margin-top: 4rem; }
@@ -1031,6 +1092,18 @@ h1, h2, h3, h4 {
 
 .viewer__sidenote .section-marker { margin-bottom: 0.2rem; }
 
+.viewer__sidenote-plate {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.85) contrast(0.95);
+  border: 1px solid var(--rule-strong);
+  margin-bottom: 0.25rem;
+}
+
+[data-theme="dark"] .viewer__sidenote-plate { filter: saturate(0.75) brightness(0.82); }
+
 .viewer__title {
   font-family: var(--font-display);
   font-size: clamp(1.8rem, 2.8vw, 2.4rem);
@@ -1184,7 +1257,9 @@ h1, h2, h3, h4 {
 @media (max-width: 960px) {
   .masthead__grid { grid-template-columns: auto 1fr; gap: 1rem; }
   .masthead__issue { display: none; }
-  .masthead__nav { gap: 1rem; font-size: 0.85rem; }
+  .masthead__nav { gap: 0.75rem; font-size: 0.8rem; flex-wrap: wrap; justify-content: flex-end; }
+  .theme-toggle { margin-left: 0.5rem; padding: 0.2rem 0.4rem; font-size: 0.55rem; }
+  .theme-toggle__sun, .theme-toggle__moon { letter-spacing: 0.15em; }
 
   .hero::before { display: none; }
   .hero__grid { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -1197,7 +1272,22 @@ h1, h2, h3, h4 {
   .figure__grid { grid-template-columns: 1fr; gap: 2rem; }
   .figure__sidenote { position: static; }
 
-  .reader { grid-template-columns: 1fr; }
+  .reader { grid-template-columns: minmax(0, 1fr); }
+  .reader__body { min-width: 0; }
+  .reader-hero__grid { grid-template-columns: 1fr; gap: 2rem; }
+  .reader-hero__plate { aspect-ratio: 16 / 10; }
+
+  /* Mobile: diagrams stay in-column; SVG keeps intrinsic width and scrolls
+     horizontally inside the container so text remains readable. */
+  .diagram {
+    margin: 2rem 0 2.2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    max-width: 100%;
+    width: 100%;
+  }
+  .diagram svg { min-width: 640px; width: 640px; flex: none; }
   .reader__toc,
   .reader__sidenote { position: static; margin-bottom: 1.5rem; }
 
