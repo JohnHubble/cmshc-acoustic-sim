@@ -13,6 +13,7 @@
 }
 </script>
 <link rel="stylesheet" href="styles.css">
+<script>try{var t=localStorage.getItem('cmshc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
 
@@ -24,6 +25,7 @@
       <a href="index.html">Simulation</a>
       <a href="learn.html">Reader</a>
       <a href="viewer3d.html" class="is-active">Spatial</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"><span class="theme-toggle__sun">◐ Dark</span><span class="theme-toggle__moon">◑ Light</span></button>
     </nav>
   </div>
 </header>
@@ -510,6 +512,12 @@ populateRoomButtons();
 onResize();
 switchRoom(DATA.room_order[0]);
 animate();
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('cmshc-theme', next); } catch (e) {}
+});
 
 </script>
 </body>

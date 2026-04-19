@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dome Study — CMSHC Acoustic Simulation</title>
 <link rel="stylesheet" href="styles.css">
+<script>try{var t=localStorage.getItem('cmshc-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
 
@@ -16,6 +17,7 @@
       <a href="index.html" class="is-active">Simulation</a>
       <a href="learn.html">Reader</a>
       <a href="viewer3d.html">Spatial</a>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"><span class="theme-toggle__sun">◐ Dark</span><span class="theme-toggle__moon">◑ Light</span></button>
     </nav>
   </div>
 </header>
@@ -114,6 +116,21 @@ const DATA = {"yang_sphere":{"name":"Yang Sphere","inner_radius":7.855,"center_h
 let currentRoom = Object.keys(DATA)[0];
 let currentScenario = Object.keys(DATA[currentRoom].scenarios)[0];
 
+function themeVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function palette() {
+  return {
+    INK: themeVar('--ink'),
+    INK_MUTE: themeVar('--ink-mute'),
+    OCHRE: themeVar('--ochre'),
+    OCHRE_DEEP: themeVar('--ochre-deep'),
+    YANG: themeVar('--yang'),
+    YIN: themeVar('--yin'),
+    RULE: themeVar('--rule-strong'),
+  };
+}
+
 function init() {
   // Room buttons
   const roomBtns = document.getElementById('room-btns');
@@ -169,12 +186,7 @@ function drawRays(room, scenario) {
   function tx(x) { return cx + x * scale; }
   function ty(y) { return floorY - y * scale; }
 
-  const INK = '#1a2036';
-  const INK_MUTE = '#7c8298';
-  const OCHRE = '#c8922c';
-  const OCHRE_DEEP = '#a4751a';
-  const YANG = '#b14b4b';
-  const YIN = '#3a6b5a';
+  const { INK, INK_MUTE, OCHRE, OCHRE_DEEP, YANG, YIN } = palette();
   const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
 
   let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" font-family="${MONO}">`;
@@ -318,13 +330,7 @@ function drawEnergy(room, scenario) {
   function bx(x) { return padL + (x + room.floor_radius) * scaleX; }
   function ey(e) { return H - padB - e * scaleEn; }
 
-  const INK = '#1a2036';
-  const INK_MUTE = '#7c8298';
-  const OCHRE = '#c8922c';
-  const OCHRE_DEEP = '#a4751a';
-  const YANG = '#b14b4b';
-  const YIN = '#3a6b5a';
-  const RULE = 'rgba(26, 32, 54, 0.18)';
+  const { INK, INK_MUTE, OCHRE, OCHRE_DEEP, YANG, YIN, RULE } = palette();
   const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
 
   let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" font-family="${MONO}">`;
@@ -348,7 +354,7 @@ function drawEnergy(room, scenario) {
 
   // Energy curve
   const stroke = scenario.source_height > 0.1 ? YIN : YANG;
-  const fill = scenario.source_height > 0.1 ? 'rgba(58, 107, 90, 0.12)' : 'rgba(177, 75, 75, 0.12)';
+  const fill = stroke + '22';
   let pathD = `M ${bx(bins[0]).toFixed(1)} ${ey(energy[0]).toFixed(1)}`;
   for (let i = 1; i < bins.length; i++) {
     pathD += ` L ${bx(bins[i]).toFixed(1)} ${ey(energy[i]).toFixed(1)}`;
@@ -400,6 +406,13 @@ function updateStats(room, scenario) {
 }
 
 init();
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('cmshc-theme', next); } catch (e) {}
+  if (typeof update === 'function') update();
+});
 </script>
 </body>
 </html>
